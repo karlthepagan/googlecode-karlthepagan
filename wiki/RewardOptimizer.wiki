@@ -1,0 +1,12 @@
+#World of Warcraft quest reward optimizer.
+
+= Introduction =
+
+My paladin stands at level 58 at the doorway to Outlands, but I pause and consider what kind of a paladin I want to be. What if I want it ALL?
+
+I want every flavor of gear for tanking, dps, solo pvp, and healing. It's hard enough to pick rewards for a cloth, but Paladins can wear every kind of armor and wield many weapons.
+
+
+= Details =
+
+Target platform: Java 6/JNLP (aka Java 6 WebStart)
