@@ -1,4 +1,4 @@
-#interface API for message-based libraries to offer their results to Future-based tokens used to efficiently abstract the message library's request
+#summary interface API for message-based libraries to offer their results to Future-based tokens used to efficiently abstract the message library's request
 
 = Introduction =
 
