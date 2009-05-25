@@ -1,6 +1,6 @@
 /*
  * This file is part of the MessageFuture library,
- * Copyright 2009 karlthepagan@gmaiil.com
+ * Copyright 2009 karlthepagan@gmail.com
  * 
  * The MessageFuture library is free software: you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as
@@ -38,9 +38,10 @@ public class LockMessageFuture<V> implements MessageFuture<V> {
 	/**
 	 * Has a value of literal null when no result has been set yet.
 	 */
-	private volatile Object _result;
-	private final Lock _itemLock;
-	private final Condition _notEmpty;
+	private volatile Object _result; // 4-8
+	private final Lock _itemLock; // 4-8
+	private final Condition _notEmpty; // 4-8
+	// total: 20-40 bytes (object: 2 pointers)
 	
 	/**
 	 * Construct a new LockMessageFuture with an unfair ReentantLock.

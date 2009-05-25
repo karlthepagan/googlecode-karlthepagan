@@ -1,6 +1,6 @@
 /*
  * This file is part of the MessageFuture library,
- * Copyright 2009 karlthepagan@gmaiil.com
+ * Copyright 2009 karlthepagan@gmail.com
  * 
  * The MessageFuture library is free software: you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as
@@ -47,7 +47,7 @@ public class LocalExecutorTest {
 	ExecutorService parentExec = null;
 	ExecutorService exec = null;
 	ExecutorService exec2 = null;
-
+	
 	@Before
 	public void setUp() throws Exception {
 		parentExec = Executors.newFixedThreadPool(10);
@@ -62,6 +62,9 @@ public class LocalExecutorTest {
 		exec.shutdownNow();
 		exec = null;
 		parentExec.shutdownNow();
+		if(false == parentExec.awaitTermination(10, TimeUnit.SECONDS)) {
+			throw new Exception("failed to shutdown executor");
+		}
 		parentExec = null;
 	}
 
@@ -243,6 +246,7 @@ public class LocalExecutorTest {
 				}
 			});
 			canceled = exec.shutdownNow();
+			Thread.yield(); // TODO looks like atomic is insufficient to pass this
 			exec.submit(new Callable<Object>() {
 				@Override
 				public Object call() throws Exception {
