@@ -13,3 +13,11 @@ Allow external thread to offer completion results to Future objects. This allows
   # allow mixing in callbacks / interceptors which safely modify the tasks being executed based on user preference (allow any thread to modify the user's set of tasks to wait for, for example user is waiting for all messages of type "client disconnect" and user may provide a callback class which filters the results efficiently, allowing separation of concerns between the filtering and the completion handling logic)
   # allow fine-grained task cancelation by outside callers without a Future handle (i.e. by abstracting requests/responses into request id's)
   # provide building-blocks to aggregate futures into a single-user-thread record updating mechanism
+
+= Related and Competing Works =
+
+  * [Limewire.org ListeningFuture https://www.limewire.org/fisheye/browse/limecvs/components/common/src/main/java/org/limewire/concurrent] - provides completion callbacks for Futures
+  * [DiRMI Completion https://dirmi.dev.java.net/nonav/javadoc/org/cojen/dirmi/Completion.html] - allows completion queue registration on individual Futures
+
+= Discussions =
+  * concurrency-interest threads on the subject of Executor & Future design: [1 http://cs.oswego.edu/pipermail/concurrency-interest/2009-April/005971.html] [2 http://cs.oswego.edu/pipermail/concurrency-interest/2007-December/004693.html] [3 http://cs.oswego.edu/pipermail/concurrency-interest/2009-May/006117.html]
