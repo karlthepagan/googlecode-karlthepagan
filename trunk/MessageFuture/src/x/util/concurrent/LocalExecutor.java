@@ -1,6 +1,6 @@
 /*
  * This file is part of the MessageFuture library,
- * Copyright 2009 karlthepagan@gmaiil.com
+ * Copyright 2009 karlthepagan@gmail.com
  * 
  * The MessageFuture library is free software: you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as
@@ -45,7 +45,7 @@ public class LocalExecutor extends AbstractMessageExecutor implements ExecutorSe
 	}
 
 	@Override
-	protected void execute(ExecutorFuture<?> task) {
+	protected void execute(ExecutorFuture<?,?> task) {
 		_exec.execute((RunnableExecutorFuture<?>)task);
 	}
 
@@ -57,25 +57,25 @@ public class LocalExecutor extends AbstractMessageExecutor implements ExecutorSe
 	}
 	
 	public void execute(Runnable command) {
-		ExecutorFuture<?> runTask = newTaskFor(command, null);
+		ExecutorFuture<?,?> runTask = newTaskFor(command, null);
 		
 		execute(runTask);
 	}
 
 	public Future<?> submit(Runnable task) {
-		ExecutorFuture<?> runTask = newTaskFor(task, null);
+		ExecutorFuture<?,?> runTask = newTaskFor(task, null);
 		execute(runTask);
 		return runTask;
 	}
 
 	public <T> Future<T> submit(Runnable task, T result) {
-		ExecutorFuture<T> runTask = newTaskFor(task, result);
+		ExecutorFuture<T,?> runTask = newTaskFor(task, result);
 		execute(runTask);
 		return runTask;
 	}
 
 	public <T> Future<T> submit(Callable<T> task) {
-		ExecutorFuture<T> runTask = newTaskFor(task);
+		ExecutorFuture<T,?> runTask = newTaskFor(task);
 		execute(runTask);
 		return runTask;
 	}
@@ -177,11 +177,11 @@ public class LocalExecutor extends AbstractMessageExecutor implements ExecutorSe
 		}
 	}
 
-	protected <V> ExecutorFuture<V> newTaskFor(final Runnable run, final V data) {
+	protected <V> ExecutorFuture<V,?> newTaskFor(final Runnable run, final V data) {
 		if(_shutdown.get())
 			throw new RejectedExecutionException();
 		
-		ExecutorFuture<V> task = new RunnableExecutorFuture<V>() {
+		ExecutorFuture<V,?> task = new RunnableExecutorFuture<V>() {
 			@Override
 			protected V innerRun() throws Exception {
 				run.run();
@@ -201,11 +201,11 @@ public class LocalExecutor extends AbstractMessageExecutor implements ExecutorSe
 		return task;
 	}
 
-	protected <V> ExecutorFuture<V> newTaskFor(final Callable<V> task) {
+	protected <V> ExecutorFuture<V,?> newTaskFor(final Callable<V> task) {
 		if(_shutdown.get())
 			throw new RejectedExecutionException();
 		
-		ExecutorFuture<V> runTask = new RunnableExecutorFuture<V>() {
+		ExecutorFuture<V,?> runTask = new RunnableExecutorFuture<V>() {
 			@Override
 			protected V innerRun() throws Exception {
 				return task.call();
@@ -225,7 +225,7 @@ public class LocalExecutor extends AbstractMessageExecutor implements ExecutorSe
 	}
 	
 	protected abstract class RunnableExecutorFuture<V> extends
-			ExecutorFuture<V> implements RunnableFuture<V> {
+			ExecutorFuture<V,Object> implements RunnableFuture<V> {
 		
 		protected abstract V innerRun() throws Exception;
 

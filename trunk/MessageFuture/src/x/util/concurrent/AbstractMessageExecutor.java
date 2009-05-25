@@ -1,3 +1,20 @@
+/*
+ * This file is part of the MessageFuture library,
+ * Copyright 2009 karlthepagan@gmail.com
+ * 
+ * The MessageFuture library is free software: you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ * 
+ * The MessageFuture library is distributed in the hope that it will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with the MessageFuture library.  If not, see http://www.gnu.org/licenses/
+ */
 package x.util.concurrent;
 
 import java.util.ArrayList;
@@ -27,16 +44,16 @@ public abstract class AbstractMessageExecutor {
 	};
 	
 	protected final AtomicBoolean _shutdown;
-	protected final ConcurrentMap<Object, ExecutorFuture<?>> _starting;
-	protected final ConcurrentMap<Object, ExecutorFuture<?>> _running;
-	protected final CopyOnWriteArrayList<BlockingQueue<? super ExecutorFuture<?>>> _completions;
+	protected final ConcurrentMap<Object, ExecutorFuture<?,?>> _starting;
+	protected final ConcurrentMap<Object, ExecutorFuture<?,?>> _running;
+	protected final CopyOnWriteArrayList<BlockingQueue<? super ExecutorFuture<?,?>>> _completions;
 
 	public AbstractMessageExecutor() {
 		super();
 		_shutdown = new AtomicBoolean(false);
-		_starting = new ConcurrentHashMap<Object, ExecutorFuture<?>>();
-		_running = new ConcurrentHashMap<Object, ExecutorFuture<?>>();
-		_completions = new CopyOnWriteArrayList<BlockingQueue<? super ExecutorFuture<?>>>();
+		_starting = new ConcurrentHashMap<Object, ExecutorFuture<?,?>>();
+		_running = new ConcurrentHashMap<Object, ExecutorFuture<?,?>>();
+		_completions = new CopyOnWriteArrayList<BlockingQueue<? super ExecutorFuture<?,?>>>();
 	}
 
 	static <T> Object[] identityArray(Collection<T> source) {
@@ -45,9 +62,9 @@ public abstract class AbstractMessageExecutor {
 		return result;
 	}
 	
-	protected abstract void execute(ExecutorFuture<?> task);
+	protected abstract void execute(ExecutorFuture<?,?> task);
 	
-	protected abstract <T> ExecutorFuture<T> newTaskFor(final Callable<T> task);
+	protected abstract <T> ExecutorFuture<T,?> newTaskFor(final Callable<T> task);
 	
 	protected abstract List<Runnable> toShutdownList(Collection<?> starting);
 
@@ -93,15 +110,14 @@ public abstract class AbstractMessageExecutor {
 		
 		Iterator<? extends Callable<T>> taskIter = tasks.iterator();
 		ArrayList<Future<T>> runners = new ArrayList<Future<T>>(tasks.size());
-		ArrayBlockingQueue<ExecutorFuture<?>> queue = new ArrayBlockingQueue<ExecutorFuture<?>>(tasks.size());
+		ArrayBlockingQueue<ExecutorFuture<?,?>> queue = new ArrayBlockingQueue<ExecutorFuture<?,?>>(tasks.size());
 		Object[] sorted = null;
-		// error discovering new EPMD backend
-		// restart classcast exception in configuration
+		
 		try {
 			_completions.add(queue);
 			
 			while(taskIter.hasNext()) {
-				ExecutorFuture<T> task = newTaskFor(taskIter.next());
+				ExecutorFuture<T,?> task = newTaskFor(taskIter.next());
 				execute(task);
 				runners.add(task);
 			}
@@ -110,7 +126,7 @@ public abstract class AbstractMessageExecutor {
 			
 			if(timeoutNanos < 0) {
 				while(doneCount != 0 && successCount != 0) {
-					ExecutorFuture<?> future = queue.take();
+					ExecutorFuture<?,?> future = queue.take();
 					if(contains(sorted,future)) {
 						doneCount--;
 					
@@ -123,7 +139,7 @@ public abstract class AbstractMessageExecutor {
 				while ((waitNanos = timeoutNanos - System.nanoTime()) > 0
 						&& doneCount != 0 && successCount != 0) {
 					
-					ExecutorFuture<?> future = queue.poll(waitNanos,
+					ExecutorFuture<?,?> future = queue.poll(waitNanos,
 							TimeUnit.NANOSECONDS);
 					if(future == null) continue;
 					// continue tests timeout
@@ -168,7 +184,7 @@ public abstract class AbstractMessageExecutor {
 
 	public void shutdown() {
 		_shutdown.set(true);
-		for (ExecutorFuture<?> k : _running.values()) {
+		for (ExecutorFuture<?,?> k : _running.values()) {
 			k.cancel(false);
 		}
 		
@@ -179,7 +195,7 @@ public abstract class AbstractMessageExecutor {
 	public List<Runnable> shutdownNow() {
 		_shutdown.set(true);
 		
-		for (ExecutorFuture<?> k : _running.values()) {
+		for (ExecutorFuture<?,?> k : _running.values()) {
 			k.cancel(true);
 		}
 		
@@ -190,7 +206,7 @@ public abstract class AbstractMessageExecutor {
 		return toShutdownList(_starting.values());
 	}
 	
-	protected abstract class ExecutorFuture<V> extends
+	protected abstract class ExecutorFuture<V,ATTACHMENT> extends
 		LockMessageFuture<V> {
 
 		public abstract Object task();
@@ -209,7 +225,7 @@ public abstract class AbstractMessageExecutor {
 		@Override
 		protected void onDone() {
 			_running.remove(task());
-			for (BlockingQueue<? super ExecutorFuture<?>> completion : _completions) {
+			for (BlockingQueue<? super ExecutorFuture<?,?>> completion : _completions) {
 				completion.offer(this);
 			}
 		}
