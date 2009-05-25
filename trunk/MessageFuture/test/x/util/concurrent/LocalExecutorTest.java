@@ -57,12 +57,22 @@ public class LocalExecutorTest {
 
 	@After
 	public void tearDown() throws Exception {
-		exec2.shutdownNow();
-		exec2.awaitTermination(10, TimeUnit.SECONDS);
+		try {
+			// testable failures
+			exec2.shutdownNow();
+			exec2.awaitTermination(10, TimeUnit.MILLISECONDS);
+		} catch( Exception e) {
+		}
 		exec2 = null;
-		exec.shutdownNow();
-		exec.awaitTermination(10, TimeUnit.SECONDS);
+		try {
+			// testable failures
+			exec.shutdownNow();
+			exec.awaitTermination(10, TimeUnit.MILLISECONDS);
+		} catch( Exception e) {
+		}
 		exec = null;
+		
+		// untestable failures
 		parentExec.shutdownNow();
 		if(false == parentExec.awaitTermination(10, TimeUnit.SECONDS)) {
 			throw new Exception("failed to shutdown executor");

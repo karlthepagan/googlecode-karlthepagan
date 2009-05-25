@@ -111,7 +111,7 @@ public class LockMessageFuture<V> implements MessageFuture<V> {
 		}
     }
 	
-	public <U extends V> boolean offer(U data) {
+	public boolean offer(V data) {
 		if (_result != null)
 			return false;
 		

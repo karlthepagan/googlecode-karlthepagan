@@ -31,6 +31,7 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.RunnableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class LocalExecutor extends AbstractMessageExecutor implements ExecutorService {
 	protected final Executor _exec;
@@ -192,10 +193,6 @@ public class LocalExecutor extends AbstractMessageExecutor implements ExecutorSe
 			public Object task() {
 				return run;
 			}
-			
-			@Override
-			protected void onCancel(boolean mayInterruptIfRunning) {
-			}
 		};
 		task.onInitialize();
 		return task;
@@ -215,23 +212,41 @@ public class LocalExecutor extends AbstractMessageExecutor implements ExecutorSe
 			public Object task() {
 				return task;
 			}
-			
-			@Override
-			protected void onCancel(boolean mayInterruptIfRunning) {
-			}
 		};
 		runTask.onInitialize();
 		return runTask;
 	}
+
+	protected static final Thread IDLE = new Thread() {
+		@Override
+		public void interrupt() {
+			// swallow fake interrupt calls
+		}
+
+		@Override
+		public final void run() {
+			// don't allow run
+		}
+
+		@Override
+		public final void start() {
+			// don't allow run
+		}
+	};
 	
 	protected abstract class RunnableExecutorFuture<V> extends
 			ExecutorFuture<V,Object> implements RunnableFuture<V> {
-		
+	    
+		private final AtomicReference<Thread> _thread = new AtomicReference<Thread>(IDLE);
+
 		protected abstract V innerRun() throws Exception;
 
 		@Override
 		public void run() {
-			// double-start prevention? kinda
+			// real double-start prevention
+			if (false == _thread.compareAndSet(IDLE, Thread.currentThread()))
+				return;
+
 			if (isDone())
 				return;
 
@@ -247,6 +262,18 @@ public class LocalExecutor extends AbstractMessageExecutor implements ExecutorSe
 				// exception
 				offerException(t);
 			}
+			
+			_thread.set(IDLE);
+			// cannot lazySet here because we shouldn't interrupt
+			// the next future that uses this thread
+		}
+		
+		@Override
+		protected void onCancel(boolean mayInterruptIfRunning) {
+			// TODO "may interrupt" should be interpreted as: cancel if work has begun
+			// i.e. send remote cancelation message rather  than local
+			super.onCancel(mayInterruptIfRunning);
+			if(mayInterruptIfRunning) _thread.get().interrupt();
 		}
 	}
 }
