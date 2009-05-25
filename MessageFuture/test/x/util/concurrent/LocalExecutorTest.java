@@ -107,7 +107,7 @@ public class LocalExecutorTest {
 				makeDelayCallable(1000, wasRun, 2, 2),
 				makeDelayExcepting(75, 3 + " exception"),
 				makeDelayCallable(2000, null, 0, 4));
-		List<Future<Object>> invoked = exec.invokeAll(calls,100,TimeUnit.MILLISECONDS);
+		List<Future<Object>> invoked = exec.invokeAll(calls,200,TimeUnit.MILLISECONDS);
 		
 		assertNotNull("1= invokeAll returns non-null",invoked);
 		assertEquals("2= returned all items", calls.size(), invoked.size());
@@ -126,6 +126,8 @@ public class LocalExecutorTest {
 		} catch( CancellationException e) {
 		}
 		try {
+			// this can throw cancelation exception
+			// if the timeout is too close to 3's delay
 			invoked.get(3).get();
 			fail("9= item 3 throws exception");
 		} catch(ExecutionException e) {
