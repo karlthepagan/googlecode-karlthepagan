@@ -42,7 +42,21 @@ public abstract class AbstractMessageExecutor {
 			return System.identityHashCode(o1) - System.identityHashCode(o2);
 		}
 	};
+
+	static <T> Object[] identityArray(Collection<T> source) {
+		Object[] result = source.toArray();
+		Arrays.sort(result,IDENTITY_SORT);
+		return result;
+	}
 	
+	static boolean contains(Object[] identityArray, Object element) {
+		return Arrays.binarySearch(identityArray, element, IDENTITY_SORT) >= 0;		
+	}
+
+	static int indexOf(Object[] identityArray, Object element) {
+		return Arrays.binarySearch(identityArray, element);
+	}
+
 	protected final AtomicBoolean _shutdown;
 	protected final ConcurrentMap<Object, ExecutorFuture<?,?>> _starting;
 	protected final ConcurrentMap<Object, ExecutorFuture<?,?>> _running;
@@ -56,12 +70,6 @@ public abstract class AbstractMessageExecutor {
 		_completions = new CopyOnWriteArrayList<BlockingQueue<? super ExecutorFuture<?,?>>>();
 	}
 
-	static <T> Object[] identityArray(Collection<T> source) {
-		Object[] result = source.toArray();
-		Arrays.sort(result,IDENTITY_SORT);
-		return result;
-	}
-	
 	protected abstract void execute(ExecutorFuture<?,?> task);
 	
 	protected abstract <T> ExecutorFuture<T,?> newTaskFor(final Callable<T> task);
@@ -164,14 +172,6 @@ public abstract class AbstractMessageExecutor {
 		}
 		
 		return runners;
-	}
-
-	protected static boolean contains(Object[] identityArray, Object element) {
-		return Arrays.binarySearch(identityArray, element, IDENTITY_SORT) >= 0;		
-	}
-
-	protected static int indexOf(Object[] identityArray, Object element) {
-		return Arrays.binarySearch(identityArray, element);
 	}
 
 	public boolean isShutdown() {

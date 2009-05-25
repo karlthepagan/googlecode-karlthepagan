@@ -30,7 +30,7 @@ public interface MessageFuture<V> extends Future<V> {
      * 
      * @return true if and only if the data was accepted
      */
-    <U extends V> boolean offer(U data);
+    boolean offer(V data);
 
 	/**
 	 * Method for delivering failure completion signals and exception data to
