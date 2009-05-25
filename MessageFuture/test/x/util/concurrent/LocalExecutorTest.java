@@ -58,8 +58,10 @@ public class LocalExecutorTest {
 	@After
 	public void tearDown() throws Exception {
 		exec2.shutdownNow();
+		exec2.awaitTermination(10, TimeUnit.SECONDS);
 		exec2 = null;
 		exec.shutdownNow();
+		exec.awaitTermination(10, TimeUnit.SECONDS);
 		exec = null;
 		parentExec.shutdownNow();
 		if(false == parentExec.awaitTermination(10, TimeUnit.SECONDS)) {
@@ -181,7 +183,8 @@ public class LocalExecutorTest {
 			fail("7= cannot execute with null in list");
 		} catch( NullPointerException e) {
 		}
-		assertFalse("8= item 0 wasn't run",wasRun[0]);
+		// spec is ambiguous on this point
+		// value of wasRun[0] is impl specific
 		
 		try {
 			exec.invokeAny(null);
@@ -233,39 +236,29 @@ public class LocalExecutorTest {
 	}
 	
 	@Test
-	public void testShutdownNow() throws InterruptedException {
-		exec.submit(makeDelayCallable(100));
+	public void testShutdownNow() throws InterruptedException, ExecutionException {
+		final boolean[] wasRun = new boolean[]{false,false,false};
+		exec.submit(makeDelayCallable(1000, wasRun, 0));
 		List<Runnable> canceled = null;
-		final boolean[] wasRun = new boolean[]{false};
 		try {
-			exec.submit(new Callable<Object>() {
-				@Override
-				public Object call() throws Exception {
-					wasRun[0] = true;
-					return null;
-				}
-			});
+			exec.submit(makeCallable(wasRun, 1)).get();
 			canceled = exec.shutdownNow();
-			Thread.yield(); // TODO looks like atomic is insufficient to pass this
-			exec.submit(new Callable<Object>() {
-				@Override
-				public Object call() throws Exception {
-					wasRun[0] = true;
-					return null;
-				}
-			});
-			fail("1= submit after shutdown did not throw");
+			exec.submit(makeCallable(wasRun,2));
+			fail("1= submit after shutdown throws exception");
 		} catch(RejectedExecutionException e) {
 		}
 		
-		assertFalse("2= task was not run after shutdown", wasRun[0]);
-		assertNotNull("3= shutdown list is not null", canceled);
-		assertTrue("4= shutdown list has an element", 1 <= canceled.size());
-		assertTrue("5= looks shut down",exec.isShutdown());
-		assertTrue("6= finished terminating",exec.awaitTermination(10,TimeUnit.MILLISECONDS));
-		assertTrue("7= looks terminated",exec.isTerminated());
-		assertFalse("8= peer is not shut down",exec2.isShutdown());
-		assertFalse("9= peer is not terminated",exec2.isTerminated());
+		assertTrue("2= task was run before shutdown",wasRun[1]);
+		assertFalse("3= delayed task was canceled",wasRun[0]);
+		assertFalse("4= task was not run after shutdown", wasRun[2]);
+		assertNotNull("5= shutdown list is not null", canceled);
+		// contents of canceled depends on the number of threads in the execution list
+		// because the shutdown list is only for tasks which were never begun
+		assertTrue("6= looks shut down",exec.isShutdown());
+		assertTrue("7= finished terminating",exec.awaitTermination(10,TimeUnit.MILLISECONDS));
+		assertTrue("8= looks terminated",exec.isTerminated());
+		assertFalse("9= peer is not shut down",exec2.isShutdown());
+		assertFalse("10= peer is not terminated",exec2.isTerminated());
 	}
 	
 	protected Callable<Object> makeDelayExcepting(final long millis, final String message) {
