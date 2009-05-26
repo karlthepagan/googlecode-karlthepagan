@@ -16,7 +16,7 @@ Allow external thread to offer completion results to Future objects. This allows
 
 = Related and Competing Works =
 
-  * FutureTask has set() and setException() methods which are suitable for a simple implementation. If you need to allow multiple handlers to produce a result (distributed computing with duplicate jobs) then MessageFuture.offer() will determine which one was submitted without extra encapsulation. MessageFuture for distributed tasks consumes 20 bytes (24 after aligned) whereas FutureTask(Callable) is 64 bytes per instance, and FutureTask(Runnable) is 80 bytes per instance. MessageFuture also provides methods to override for result-specific completion callbacks and custom cancellation logic.
+  * FutureTask has set() and setException() methods which are suitable for a simple implementation. If you need to allow multiple handlers to produce a result (distributed computing with duplicate jobs) then MessageFuture.offer() will determine which one was submitted without extra encapsulation. MessageFuture for distributed tasks consumes 20 bytes (24 after aligned) whereas FutureTask(Callable) is 64 bytes per instance, and FutureTask(Runnable) is 80 bytes per instance (more on 64-bit arch). MessageFuture also provides methods to override for result-specific completion callbacks and custom cancellation logic.
   * [https://www.limewire.org/fisheye/browse/limecvs/components/common/src/main/java/org/limewire/concurrent Limewire.org ListeningFuture] - provides completion callbacks for Futures
   * [https://dirmi.dev.java.net/nonav/javadoc/org/cojen/dirmi/Completion.html DiRMI Completion] - allows completion queue registration on individual Futures
 
