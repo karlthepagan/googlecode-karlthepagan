@@ -17,6 +17,7 @@ Allow external thread to offer completion results to Future objects. This allows
 = Related and Alternative Works =
 
   * FutureTask has set() and setException() methods which are suitable for a simple implementation. If you need to allow multiple handlers to produce a result (distributed computing with duplicate jobs) then MessageFuture.offer() will determine which one was submitted without extra encapsulation. The basic impl, LockMessageFuture, for distributed tasks consumes 20 bytes (24 after aligned) whereas FutureTask(Callable) is 64 bytes per instance, and FutureTask(Runnable) is 80 bytes per instance (more on 64-bit arch). MessageFuture also provides methods to override for result-specific completion callbacks and custom cancellation logic.
+  * [http://labs.atlassian.com/source/browse/CONCURRENT/trunk/src/main/java/com/atlassian/util/concurrent/SettableFuture.java Atlassian labs SettableFuture] - very simple implementation using AttomicReference and CountdownLatch.
   * [https://jdk7.dev.java.net/ JDK7 NIO.2] - has changed IoFuture into the baseline Future API, but uses sun.nio.ch.AbstractFuture as the implementation which has attachment capability and connects to an AsynchronousChannel.
   * [http://docs.jboss.org/xnio/latest/api/index.html?org/jboss/xnio/IoFuture.html jboss.org xnio.IoFuture] - provides an io-focused alternative to Future
   * [https://www.limewire.org/fisheye/browse/limecvs/components/common/src/main/java/org/limewire/concurrent Limewire.org ListeningFuture] - provides completion callbacks for Futures
