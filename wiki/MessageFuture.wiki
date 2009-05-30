@@ -13,6 +13,7 @@ Allow external thread to offer completion results to Future objects. This allows
   # allow mixing in callbacks / interceptors which safely modify the tasks being executed based on user preference (allow any thread to modify the user's set of tasks to wait for, for example user is waiting for all messages of type "client disconnect" and user may provide a callback class which filters the results efficiently, allowing separation of concerns between the filtering and the completion handling logic)
   # allow fine-grained task cancelation by outside callers without a Future handle (i.e. by abstracting requests/responses into request id's)
   # provide building-blocks to aggregate futures into a single-user-thread record updating mechanism
+  # provide an interface to progress callbacks similar to or directly compatible with SwingWorker
 
 = Related and Alternative Works =
 
