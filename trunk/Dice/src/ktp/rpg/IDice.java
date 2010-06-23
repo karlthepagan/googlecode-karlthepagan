@@ -51,4 +51,9 @@ public interface IDice {
 //	void m(ShortBuffer dst, ShortBuffer spec);
 //	short[] m(short[] faces);
 //	short[] m(short[] faces, short[] count);
+	
+	/**
+	 * Total bits consumed.
+	 */
+	int totalBits();
 }
