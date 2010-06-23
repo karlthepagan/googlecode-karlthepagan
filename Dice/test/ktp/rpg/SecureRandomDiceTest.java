@@ -2,20 +2,28 @@ package ktp.rpg;
 
 import static org.junit.Assert.*;
 
+import java.nio.IntBuffer;
 import java.util.Random;
 
 import ktp.rpg.SecureRandomDice;
 
+import org.hamcrest.Matcher;
 import org.junit.Test;
+
+import test.CloseTo;
 
 import static test.CloseTo.closeToPercent;
 
 public class SecureRandomDiceTest {
 	
-	private static long FLOOR = 0;
-	private static long INC = Integer.MAX_VALUE >> 20 - FLOOR;
+	// tune FLOOR and INC so that all tests complete quickly
+	// rand(inc) + floor is the increment of the loop
+	public static long FLOOR = 0;
+	public static long INC = 2 << 21;
+	private static double VARIANCE = 0.17;
+	private static double RAND_VARIANCE = 0.33;
 
-	@Test
+	@Test(timeout=500)
 	public void testD2() {
 		Random r = new Random(2222);
 		int count = 0;
@@ -28,16 +36,19 @@ public class SecureRandomDiceTest {
 			i += r.nextInt((int)INC) + FLOOR;
 		}
 		
-		assertThat(dist[0], closeToPercent(dist[1],0.002));
+		Matcher<Number> closeToAve = CloseTo.closeToMeanPercent(IntBuffer.wrap(dist), VARIANCE);
+		
+		// how to do for every in hamcrest?
+		assertThat(dist[0], closeToAve);
+		assertThat(dist[1], closeToAve);
 	}
 
-	@Test
+	@Test(timeout=500)
 	public void testRandomD2() {
-		testRandom(2);
-		testRandom2(2);
+		testRandom(2,INC << 1,FLOOR, RAND_VARIANCE);
 	}
 
-	@Test
+	@Test(timeout=500)
 	public void testD3() {
 		Random r = new Random(2222);
 		int count = 0;
@@ -52,18 +63,17 @@ public class SecureRandomDiceTest {
 			i += r.nextInt((int)INC) + FLOOR;
 		}
 		
-		assertThat(dist[0], closeToPercent(dist[1],0.005));
-		assertThat(dist[0], closeToPercent(dist[2],0.005));
-		assertThat(dist[1], closeToPercent(dist[2],0.005));
+		assertThat(dist[0], closeToPercent(dist[1],VARIANCE));
+		assertThat(dist[0], closeToPercent(dist[2],VARIANCE));
+		assertThat(dist[1], closeToPercent(dist[2],VARIANCE));
 	}
 
-	@Test
+	@Test(timeout=500)
 	public void testRandomD3() {
-		testRandom(3);
-		testRandom2(3);
+		testRandom(3,INC << 1,FLOOR, RAND_VARIANCE);
 	}
 
-	@Test
+	@Test(timeout=500)
 	public void testD4() {
 		Random r = new Random(2222);
 		int count = 0;
@@ -78,20 +88,19 @@ public class SecureRandomDiceTest {
 			i += r.nextInt((int)INC) + FLOOR;
 		}
 		
-		assertThat(dist[0], closeToPercent(dist[1],0.005));
-		assertThat(dist[0], closeToPercent(dist[2],0.005));
-		assertThat(dist[0], closeToPercent(dist[3],0.005));
-		assertThat(dist[1], closeToPercent(dist[2],0.005));
-		assertThat(dist[2], closeToPercent(dist[3],0.005));
+		assertThat(dist[0], closeToPercent(dist[1],VARIANCE));
+		assertThat(dist[0], closeToPercent(dist[2],VARIANCE));
+		assertThat(dist[0], closeToPercent(dist[3],VARIANCE));
+		assertThat(dist[1], closeToPercent(dist[2],VARIANCE));
+		assertThat(dist[2], closeToPercent(dist[3],VARIANCE));
 	}
 
-	@Test
+	@Test(timeout=500)
 	public void testRandomD4() {
-		testRandom(4);
-		testRandom2(4);
+		testRandom(4,INC << 1,FLOOR, RAND_VARIANCE);
 	}
 
-	@Test
+	@Test(timeout=500)
 	public void testD5() {
 		Random r = new Random(2222);
 		int count = 0;
@@ -113,22 +122,21 @@ public class SecureRandomDiceTest {
 //		System.out.println(misses);
 //		System.out.println(count);
 		
-		assertThat(dist[0], closeToPercent(dist[1],0.005));
-		assertThat(dist[0], closeToPercent(dist[2],0.005));
-		assertThat(dist[0], closeToPercent(dist[3],0.005));
-		assertThat(dist[0], closeToPercent(dist[4],0.005));
-		assertThat(dist[1], closeToPercent(dist[2],0.005));
-		assertThat(dist[2], closeToPercent(dist[3],0.005));
-		assertThat(dist[3], closeToPercent(dist[4],0.005));
+		assertThat(dist[0], closeToPercent(dist[1],VARIANCE));
+		assertThat(dist[0], closeToPercent(dist[2],VARIANCE));
+		assertThat(dist[0], closeToPercent(dist[3],VARIANCE));
+		assertThat(dist[0], closeToPercent(dist[4],VARIANCE));
+		assertThat(dist[1], closeToPercent(dist[2],VARIANCE));
+		assertThat(dist[2], closeToPercent(dist[3],VARIANCE));
+		assertThat(dist[3], closeToPercent(dist[4],VARIANCE));
 	}
 
-	@Test
+	@Test(timeout=500)
 	public void testRandomD5() {
-		testRandom(5);
-		testRandom2(5);
+		testRandom(5,INC << 1,FLOOR, RAND_VARIANCE);
 	}
 
-	@Test
+	@Test(timeout=500)
 	public void testD6() {
 		Random r = new Random(2222);
 		int count = 0;
@@ -150,24 +158,22 @@ public class SecureRandomDiceTest {
 //		System.out.println(misses);
 //		System.out.println(count);
 		
-		assertThat(dist[0], closeToPercent(dist[1],0.01));
-		assertThat(dist[0], closeToPercent(dist[2],0.01));
-		assertThat(dist[0], closeToPercent(dist[3],0.01));
-		assertThat(dist[0], closeToPercent(dist[4],0.01));
-		assertThat(dist[0], closeToPercent(dist[5],0.01));
-		assertThat(dist[1], closeToPercent(dist[2],0.01));
-		assertThat(dist[2], closeToPercent(dist[3],0.01));
-		assertThat(dist[3], closeToPercent(dist[4],0.01));
-		assertThat(dist[4], closeToPercent(dist[5],0.01));
+		Matcher<Number> closeToAve = CloseTo.closeToMeanPercent(IntBuffer.wrap(dist), VARIANCE);
+		
+		assertThat(dist[0], closeToAve);
+		assertThat(dist[1], closeToAve);
+		assertThat(dist[2], closeToAve);
+		assertThat(dist[3], closeToAve);
+		assertThat(dist[4], closeToAve);
+		assertThat(dist[5], closeToAve);
 	}
 
-	@Test
+	@Test(timeout=500)
 	public void testRandomD6() {
-		testRandom(6);
-		testRandom2(6);
+		testRandom(6,INC << 1,FLOOR, RAND_VARIANCE);
 	}
 	
-	public void testRandom(int faces) {
+	public void testRandom(int faces, long inc, long floor, double variance) {
 		Random r = new Random(2222);
 		SecureRandomDice d = new SecureRandomDice(r);
 		int count = 0;
@@ -177,42 +183,19 @@ public class SecureRandomDiceTest {
 			dist[d.d(faces) - 1]++;
 			count++;
 			
-			i += r.nextInt((int)INC) + FLOOR;
+			i += r.nextInt((int)inc) + floor;
 		}
+		
+		Matcher<Number> closeToAve = CloseTo.closeToMeanPercent(IntBuffer.wrap(dist), variance);
 		
 //		System.out.println("random d" + faces);
 		for(int j = 0; j < faces; j++) {
 //			System.out.println((j + 1) + " " + dist[j]);
-			for(int k = 0; k < faces; k++) {
-				if(j == k)
-					continue;
-				
-				assertThat(dist[j], closeToPercent(dist[k],0.01));
-			}
+			assertThat(j + " ", dist[j], closeToAve);
 		}
 	}
 
-	public void testRandom2(int faces) {
-		Random r = new Random(2222);
-		SecureRandomDice d = new SecureRandomDice(r);
-		int count = 0;
-		int[] dist = new int[faces * 2];
-		long i = Integer.MIN_VALUE;
-		while(i < Integer.MAX_VALUE) {
-			dist[(int)d.d(faces,2) - 1]++;
-			count++;
-			
-			i += r.nextInt((int)INC) + FLOOR;
-		}
-		
-		System.out.println("random 2d" + faces);
-		faces *= 2;
-		for(int j = 0; j < faces; j++) {
-			System.out.println((j + 1) + " " + dist[j]);
-		}
-	}
-
-	@Test
+	@Test(timeout=500)
 	public void testD8() {
 		Random r = new Random(2222);
 		int count = 0;
@@ -220,35 +203,31 @@ public class SecureRandomDiceTest {
 		long i = Integer.MIN_VALUE;
 		while(i < Integer.MAX_VALUE) {
 			int v = SecureRandomDice.d8((int)i);
-			assertTrue(String.valueOf(i),v != -1);
+			assertTrue(v != -1);
 			dist[v & 0x07]++;
 			count++;
 			
 			i += r.nextInt((int)INC) + FLOOR;
 		}
 		
-		assertThat(dist[0], closeToPercent(dist[1],0.01));
-		assertThat(dist[0], closeToPercent(dist[2],0.01));
-		assertThat(dist[0], closeToPercent(dist[3],0.01));
-		assertThat(dist[0], closeToPercent(dist[4],0.01));
-		assertThat(dist[0], closeToPercent(dist[5],0.01));
-		assertThat(dist[0], closeToPercent(dist[6],0.01));
-		assertThat(dist[0], closeToPercent(dist[7],0.01));
-		assertThat(dist[1], closeToPercent(dist[2],0.01));
-		assertThat(dist[2], closeToPercent(dist[3],0.01));
-		assertThat(dist[3], closeToPercent(dist[4],0.01));
-		assertThat(dist[4], closeToPercent(dist[5],0.01));
-		assertThat(dist[5], closeToPercent(dist[6],0.01));
-		assertThat(dist[6], closeToPercent(dist[7],0.01));
+		Matcher<Number> closeToAve = CloseTo.closeToMeanPercent(IntBuffer.wrap(dist), VARIANCE);
+		
+		assertThat(dist[0], closeToAve);
+		assertThat(dist[1], closeToAve);
+		assertThat(dist[2], closeToAve);
+		assertThat(dist[3], closeToAve);
+		assertThat(dist[4], closeToAve);
+		assertThat(dist[5], closeToAve);
+		assertThat(dist[6], closeToAve);
+		assertThat(dist[7], closeToAve);
 	}
 
-	@Test
+	@Test(timeout=500)
 	public void testRandomD8() {
-		testRandom(8);
-		testRandom2(8);
+		testRandom(8,INC << 1,FLOOR,RAND_VARIANCE);
 	}
 
-	@Test
+	@Test(timeout=500)
 	public void testD10() {
 		Random r = new Random(2222);
 		int count = 0;
@@ -270,30 +249,26 @@ public class SecureRandomDiceTest {
 //		System.out.println(misses);
 //		System.out.println(count);
 		
-		assertThat(dist[0], closeToPercent(dist[1],0.01));
-		assertThat(dist[0], closeToPercent(dist[2],0.01));
-		assertThat(dist[0], closeToPercent(dist[3],0.01));
-		assertThat(dist[0], closeToPercent(dist[4],0.01));
-		assertThat(dist[0], closeToPercent(dist[5],0.01));
-		assertThat(dist[0], closeToPercent(dist[6],0.01));
-		assertThat(dist[0], closeToPercent(dist[7],0.01));
-		assertThat(dist[0], closeToPercent(dist[8],0.01));
-		assertThat(dist[0], closeToPercent(dist[9],0.01));
-		assertThat(dist[1], closeToPercent(dist[2],0.01));
-		assertThat(dist[2], closeToPercent(dist[3],0.01));
-		assertThat(dist[3], closeToPercent(dist[4],0.01));
-		assertThat(dist[4], closeToPercent(dist[5],0.01));
-		assertThat(dist[5], closeToPercent(dist[6],0.01));
-		assertThat(dist[6], closeToPercent(dist[7],0.01));
+		Matcher<Number> closeToAve = CloseTo.closeToMeanPercent(IntBuffer.wrap(dist), VARIANCE);
+		
+		assertThat(dist[0], closeToAve);
+		assertThat(dist[1], closeToAve);
+		assertThat(dist[2], closeToAve);
+		assertThat(dist[3], closeToAve);
+		assertThat(dist[4], closeToAve);
+		assertThat(dist[5], closeToAve);
+		assertThat(dist[6], closeToAve);
+		assertThat(dist[7], closeToAve);
+		assertThat(dist[8], closeToAve);
+		assertThat(dist[9], closeToAve);
 	}
 
-	@Test
+	@Test(timeout=500)
 	public void testRandomD10() {
-		testRandom(10);
-		testRandom2(10);
+		testRandom(10,INC << 1,FLOOR, RAND_VARIANCE);
 	}
 
-	@Test
+	@Test(timeout=500)
 	public void testD12() {
 		Random r = new Random(2222);
 		int count = 0;
@@ -328,34 +303,28 @@ public class SecureRandomDiceTest {
 //		System.out.println(dist[10]);
 //		System.out.println(dist[11]);
 		
-		assertThat(dist[0], closeToPercent(dist[1],0.01));
-		assertThat(dist[0], closeToPercent(dist[2],0.01));
-		assertThat(dist[0], closeToPercent(dist[3],0.01));
-		assertThat(dist[0], closeToPercent(dist[4],0.01));
-		assertThat(dist[0], closeToPercent(dist[5],0.01));
-		assertThat(dist[0], closeToPercent(dist[6],0.01));
-		assertThat(dist[0], closeToPercent(dist[7],0.01));
-		assertThat(dist[0], closeToPercent(dist[8],0.01));
-		assertThat(dist[0], closeToPercent(dist[9],0.01));
-		assertThat(dist[0], closeToPercent(dist[10],0.01));
-		assertThat(dist[0], closeToPercent(dist[11],0.01));
-		assertThat(dist[1], closeToPercent(dist[2],0.01));
-		assertThat(dist[2], closeToPercent(dist[3],0.01));
-		assertThat(dist[3], closeToPercent(dist[4],0.01));
-		assertThat(dist[4], closeToPercent(dist[5],0.01));
-		assertThat(dist[5], closeToPercent(dist[6],0.01));
-		assertThat(dist[6], closeToPercent(dist[7],0.01));
-		assertThat(dist[7], closeToPercent(dist[8],0.01));
-		assertThat(dist[8], closeToPercent(dist[9],0.01));
+		Matcher<Number> closeToAve = CloseTo.closeToMeanPercent(IntBuffer.wrap(dist), VARIANCE);
+		
+		assertThat(dist[0], closeToAve);
+		assertThat(dist[1], closeToAve);
+		assertThat(dist[2], closeToAve);
+		assertThat(dist[3], closeToAve);
+		assertThat(dist[4], closeToAve);
+		assertThat(dist[5], closeToAve);
+		assertThat(dist[6], closeToAve);
+		assertThat(dist[7], closeToAve);
+		assertThat(dist[8], closeToAve);
+		assertThat(dist[9], closeToAve);
+		assertThat(dist[10], closeToAve);
+		assertThat(dist[11], closeToAve);
 	}
 
-	@Test
+	@Test(timeout=500)
 	public void testRandomD12() {
-		testRandom(12);
-		testRandom2(12);
+		testRandom(12,INC << 1,FLOOR, RAND_VARIANCE);
 	}
 
-	@Test
+	@Test(timeout=500)
 	public void testD20() {
 		Random r = new Random(2222);
 		int count = 0;
@@ -398,48 +367,32 @@ public class SecureRandomDiceTest {
 //		System.out.println(dist[18]);
 //		System.out.println(dist[19]);
 		
-		assertThat(dist[0], closeToPercent(dist[1],0.01));
-		assertThat(dist[0], closeToPercent(dist[2],0.01));
-		assertThat(dist[0], closeToPercent(dist[3],0.01));
-		assertThat(dist[0], closeToPercent(dist[4],0.01));
-		assertThat(dist[0], closeToPercent(dist[5],0.01));
-		assertThat(dist[0], closeToPercent(dist[6],0.01));
-		assertThat(dist[0], closeToPercent(dist[7],0.01));
-		assertThat(dist[0], closeToPercent(dist[8],0.01));
-		assertThat(dist[0], closeToPercent(dist[9],0.01));
-		assertThat(dist[0], closeToPercent(dist[10],0.01));
-		assertThat(dist[0], closeToPercent(dist[11],0.01));
-		assertThat(dist[0], closeToPercent(dist[12],0.01));
-		assertThat(dist[0], closeToPercent(dist[13],0.01));
-		assertThat(dist[0], closeToPercent(dist[14],0.01));
-		assertThat(dist[0], closeToPercent(dist[15],0.01));
-		assertThat(dist[0], closeToPercent(dist[16],0.01));
-		assertThat(dist[0], closeToPercent(dist[17],0.01));
-		assertThat(dist[0], closeToPercent(dist[18],0.01));
-		assertThat(dist[0], closeToPercent(dist[19],0.01));
-		assertThat(dist[1], closeToPercent(dist[2],0.01));
-		assertThat(dist[2], closeToPercent(dist[3],0.01));
-		assertThat(dist[3], closeToPercent(dist[4],0.01));
-		assertThat(dist[4], closeToPercent(dist[5],0.01));
-		assertThat(dist[5], closeToPercent(dist[6],0.01));
-		assertThat(dist[6], closeToPercent(dist[7],0.01));
-		assertThat(dist[7], closeToPercent(dist[7],0.01));
-		assertThat(dist[8], closeToPercent(dist[7],0.01));
-		assertThat(dist[9], closeToPercent(dist[10],0.01));
-		assertThat(dist[10], closeToPercent(dist[11],0.01));
-		assertThat(dist[11], closeToPercent(dist[12],0.01));
-		assertThat(dist[12], closeToPercent(dist[13],0.01));
-		assertThat(dist[13], closeToPercent(dist[14],0.01));
-		assertThat(dist[14], closeToPercent(dist[15],0.01));
-		assertThat(dist[15], closeToPercent(dist[16],0.01));
-		assertThat(dist[16], closeToPercent(dist[17],0.01));
-		assertThat(dist[17], closeToPercent(dist[18],0.01));
-		assertThat(dist[18], closeToPercent(dist[19],0.01));
+		Matcher<Number> closeToAve = CloseTo.closeToMeanPercent(IntBuffer.wrap(dist), VARIANCE);
+		
+		assertThat(dist[0], closeToAve);
+		assertThat(dist[1], closeToAve);
+		assertThat(dist[2], closeToAve);
+		assertThat(dist[3], closeToAve);
+		assertThat(dist[4], closeToAve);
+		assertThat(dist[5], closeToAve);
+		assertThat(dist[6], closeToAve);
+		assertThat(dist[7], closeToAve);
+		assertThat(dist[8], closeToAve);
+		assertThat(dist[9], closeToAve);
+		assertThat(dist[10], closeToAve);
+		assertThat(dist[11], closeToAve);
+		assertThat(dist[12], closeToAve);
+		assertThat(dist[13], closeToAve);
+		assertThat(dist[14], closeToAve);
+		assertThat(dist[15], closeToAve);
+		assertThat(dist[16], closeToAve);
+		assertThat(dist[17], closeToAve);
+		assertThat(dist[18], closeToAve);
+		assertThat(dist[19], closeToAve);
 	}
 
-	@Test
+	@Test(timeout=500)
 	public void testRandomD20() {
-		testRandom(20);
-		testRandom2(20);
+		testRandom(20,INC << 1,FLOOR, RAND_VARIANCE);
 	}
 }
