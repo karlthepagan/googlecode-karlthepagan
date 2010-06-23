@@ -54,27 +54,27 @@ class SecureRandomDice implements IDice {
 	 * 10
 	 * 11
 	 * 
-	 * encode used - 1 / 2 in 6 MSB (4 needed)
+	 * encode used in 6 MSB (5 needed)
 	 */
 	static int d3(int rand) {
 		if(rand == 0) return -1; // ensures that we have one valid result
 		
 		int wrand = rand;
-		int used = 0;
+		int used = 2;
 		int r = wrand & 0x03;
 		
 		while(r == 0)
 		{
-			assert used < 15; // max misses 15
-			used++;
-			wrand >>= 2;
+			assert used < 32; // max misses 15
+			used += 2;
+			wrand >>>= 2;
 			r = wrand & 0x03;
 		}
 		
 		return r + (used << 2);
 	}
 	static int d3bits(int v) {
-		return (v >> 2) * 2 + 1;
+		return v >>> 2;
 	}
 	static int d3value(int v) {
 		return v & 0x03;
@@ -131,10 +131,10 @@ class SecureRandomDice implements IDice {
 		
 		while(r > 4) {
 			if(r > 5) {
-				wrand = (wrand & 0x01) ^ wrand >> 2;
+				wrand = (wrand & 0x01) ^ wrand >>> 2;
 				used += 2;
 			} else {
-				wrand >>= 3;
+				wrand >>>= 3;
 				used += 3;
 			}
 			
@@ -146,7 +146,7 @@ class SecureRandomDice implements IDice {
 		return r + (used << 3);
 	}
 	static int d5bits(int v) {
-		return v >> 3;
+		return v >>> 3;
 	}
 	static int d5value(int v) {
 		return 1 + (v & 0x07);
@@ -179,7 +179,7 @@ class SecureRandomDice implements IDice {
 		int r = wrand & 0x07;
 		
 		while(r > 5) {
-			wrand = (wrand & 0x01) ^ wrand >> 2;
+			wrand = (wrand & 0x01) ^ wrand >>> 2;
 			used++;
 			
 			if( used > bits ) return -1;
@@ -190,7 +190,7 @@ class SecureRandomDice implements IDice {
 		return r + (used << 3);
 	}
 	static int d6bits(int v) {
-		return v >> 3;
+		return v >>> 3;
 	}
 	static int d6value(int v) {
 		return 1 + (v & 0x07);
@@ -254,10 +254,10 @@ class SecureRandomDice implements IDice {
 		
 		while(r > 9) {
 			if(r > 11) {
-				wrand = (wrand & 0x03) ^ wrand >> 2;
+				wrand = (wrand & 0x03) ^ wrand >>> 2;
 				used += 2;
 			} else {
-				wrand = (wrand & 0x01) ^ wrand >> 3;
+				wrand = (wrand & 0x01) ^ wrand >>> 3;
 				used += 3;
 			}
 			
@@ -269,7 +269,7 @@ class SecureRandomDice implements IDice {
 		return r + (used << 4);
 	}
 	static int d10bits(long v) {
-		return (int)(v >> 4);
+		return (int)(v >>> 4);
 	}
 	static int d10value(long v) {
 		return 1 + ((int)v & 0x0F);
@@ -310,7 +310,7 @@ class SecureRandomDice implements IDice {
 		int r = wrand & 0x0F;
 		
 		while(r > 11) {
-			wrand = (wrand & 0x03) ^ wrand >> 2;
+			wrand = (wrand & 0x03) ^ wrand >>> 2;
 			used += 2;
 			
 			if( used > bits ) return -1;
@@ -321,7 +321,7 @@ class SecureRandomDice implements IDice {
 		return r + (used << 4);
 	}
 	static int d12bits(long v) {
-		return (int)(v >> 4);
+		return (int)(v >>> 4);
 	}
 	static int d12value(long v) {
 		return 1 + ((int)v & 0x0F);
@@ -365,10 +365,10 @@ class SecureRandomDice implements IDice {
 		
 		while(r > 19) {
 			if(r > 23) {
-				wrand = (wrand & 0x07) ^ wrand >> 2;
+				wrand = (wrand & 0x07) ^ wrand >>> 2;
 				used += 2;
 			} else {
-				wrand = (wrand & 0x03) ^ wrand >> 3;
+				wrand = (wrand & 0x03) ^ wrand >>> 3;
 				used += 3;
 			}
 			
@@ -380,7 +380,7 @@ class SecureRandomDice implements IDice {
 		return r + (used << 5);
 	}
 	static int d20bits(long v) {
-		return (int)(v >> 5);
+		return (int)(v >>> 5);
 	}
 	static int d20value(long v) {
 		return 1 + ((int)v & 0x01F);
@@ -463,7 +463,7 @@ class SecureRandomDice implements IDice {
 				sum += d2massValue(v);
 				count--;
 				bits -= b;
-				rand >>= b;
+				rand = rand >>> b;
 			}
 			return sum;
 		case 3:
@@ -485,7 +485,7 @@ class SecureRandomDice implements IDice {
 				count--;
 				b = d3bits(v);
 				bits -= b;
-				rand >>= b;
+				rand = rand >>> b;
 			}
 			return sum;
 		case 4:
@@ -502,7 +502,7 @@ class SecureRandomDice implements IDice {
 				sum += d4massValue(v);
 				count--;
 				bits -= b;
-				rand >>= b;
+				rand = rand >>> b;
 			}
 			return sum;
 		case 5:
@@ -524,7 +524,7 @@ class SecureRandomDice implements IDice {
 				count--;
 				b = d5bits(v);
 				bits -= b;
-				rand >>= b;
+				rand = rand >>> b;
 			}
 			return sum;
 		case 6:
@@ -546,7 +546,7 @@ class SecureRandomDice implements IDice {
 				count--;
 				b = d6bits(v);
 				bits -= b;
-				rand >>= b;
+				rand = rand >>> b;
 			}
 			return sum;
 		case 8:
@@ -563,7 +563,7 @@ class SecureRandomDice implements IDice {
 				sum += d8massValue(v);
 				count--;
 				bits -= b;
-				rand >>= b;
+				rand = rand >>> b;
 			}
 			return sum;
 		case 10:
@@ -585,7 +585,7 @@ class SecureRandomDice implements IDice {
 				count--;
 				b = d10bits(l);
 				bits -= b;
-				rand >>= b;
+				rand = rand >>> b;
 			}
 			return sum;
 		case 12:
@@ -607,7 +607,7 @@ class SecureRandomDice implements IDice {
 				count--;
 				b = d12bits(l);
 				bits -= b;
-				rand >>= b;
+				rand = rand >>> b;
 			}
 			return sum;
 		case 20:
@@ -629,7 +629,7 @@ class SecureRandomDice implements IDice {
 				count--;
 				b = d20bits(l);
 				bits -= b;
-				rand >>= b;
+				rand = rand >>> b;
 			}
 			return sum;
 		default:
