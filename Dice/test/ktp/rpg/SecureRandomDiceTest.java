@@ -173,7 +173,7 @@ public class SecureRandomDiceTest {
 		testRandom(6,INC << 1,FLOOR, RAND_VARIANCE);
 	}
 	
-	public void testRandom(int faces, long inc, long floor, double variance) {
+	protected void testRandom(int faces, long inc, long floor, double variance) {
 		Random r = new Random(2222);
 		SecureRandomDice d = new SecureRandomDice(r);
 		int count = 0;

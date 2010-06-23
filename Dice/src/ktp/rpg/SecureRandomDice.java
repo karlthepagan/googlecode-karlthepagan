@@ -12,6 +12,7 @@ import java.util.Random;
 class SecureRandomDice implements IDice {
 	
 	private final Random _r;
+	private int _ints = 0;
 	
 	public SecureRandomDice() {
 		this(4);
@@ -65,7 +66,6 @@ class SecureRandomDice implements IDice {
 		
 		while(r == 0)
 		{
-			assert used < 32; // max misses 15
 			used += 2;
 			wrand >>>= 2;
 			r = wrand & 0x03;
@@ -212,7 +212,7 @@ class SecureRandomDice implements IDice {
 		return rand & 0x07;
 	}
 	static int d8bits(int v) {
-		return 4;
+		return 3;
 	}
 	static int d8value(int v) {
 		return 1 + v;
@@ -400,38 +400,47 @@ class SecureRandomDice implements IDice {
 		long l = 0;
 		switch(faces) {
 		case 2:
+			_ints++;
 			return d2value(d2(_r.nextInt()));
 		case 3:
 			do {
+				_ints++;
 				v = d3(_r.nextInt());
 			} while(v == -1);
 			return d3value(v);
 		case 4:
+			_ints++;
 			return d4value(d4(_r.nextInt()));
 		case 5:
 			do {
+				_ints++;
 				v = d5(_r.nextInt(),32);
 			} while(v == -1);
 			return d5value(v);
 		case 6:
 			do {
+				_ints++;
 				v = d6(_r.nextInt(),32);
 			} while(v == -1);
 			return d6value(v);
 		case 8:
+			_ints++;
 			return d8value(d8(_r.nextInt()));
 		case 10:
 			do {
+				_ints++;
 				l = d10(_r.nextInt(),32);
 			} while(l == -1);
 			return d10value(l);
 		case 12:
 			do {
+				_ints++;
 				l = d12(_r.nextInt(),32);
 			} while(l == -1);
 			return d12value(l);
 		case 20:
 			do {
+				_ints++;
 				l = d20(_r.nextInt(),32);
 			} while(l == -1);
 			return d20value(l);
@@ -444,6 +453,7 @@ class SecureRandomDice implements IDice {
 	public long d(int faces, int count) {
 		int v = 0;
 		long l = 0;
+		_ints++;
 		int rand = _r.nextInt();
 		int bits = 32;
 		int b = 0;
@@ -454,11 +464,12 @@ class SecureRandomDice implements IDice {
 			b = d2bits(0);
 			while(count > 0) {
 				if(d2regen(bits)) {
+					_ints++;
 					rand = _r.nextInt();
 					bits = 32;
 				}
 				
-				v = d2(rand);
+				v = d2((int)rand);
 				
 				sum += d2massValue(v);
 				count--;
@@ -470,6 +481,7 @@ class SecureRandomDice implements IDice {
 			sum = d3massStart(count);
 			while(count > 0) {
 				if(d3regen(bits)) {
+					_ints++;
 					rand = _r.nextInt();
 					bits = 32;
 				}
@@ -493,6 +505,7 @@ class SecureRandomDice implements IDice {
 			b = d4bits(0);
 			while(count > 0) {
 				if(d4regen(bits)) {
+					_ints++;
 					rand = _r.nextInt();
 					bits = 32;
 				}
@@ -509,6 +522,7 @@ class SecureRandomDice implements IDice {
 			sum = d5massStart(count);
 			while(count > 0) {
 				if(d5regen(bits)) {
+					_ints++;
 					rand = _r.nextInt();
 					bits = 32;
 				}
@@ -531,6 +545,7 @@ class SecureRandomDice implements IDice {
 			sum = d6massStart(count);
 			while(count > 0) {
 				if(d6regen(bits)) {
+					_ints++;
 					rand = _r.nextInt();
 					bits = 32;
 				}
@@ -554,6 +569,7 @@ class SecureRandomDice implements IDice {
 			b = d8bits(0);
 			while(count > 0) {
 				if(d8regen(bits)) {
+					_ints++;
 					rand = _r.nextInt();
 					bits = 32;
 				}
@@ -570,6 +586,7 @@ class SecureRandomDice implements IDice {
 			sum = d10massStart(count);
 			while(count > 0) {
 				if(d10regen(bits)) {
+					_ints++;
 					rand = _r.nextInt();
 					bits = 32;
 				}
@@ -592,6 +609,7 @@ class SecureRandomDice implements IDice {
 			sum = d12massStart(count);
 			while(count > 0) {
 				if(d12regen(bits)) {
+					_ints++;
 					rand = _r.nextInt();
 					bits = 32;
 				}
@@ -614,6 +632,7 @@ class SecureRandomDice implements IDice {
 			sum = d20massStart(count);
 			while(count > 0) {
 				if(d20regen(bits)) {
+					_ints++;
 					rand = _r.nextInt();
 					bits = 32;
 				}
@@ -653,5 +672,10 @@ class SecureRandomDice implements IDice {
 	public long multi(ByteBuffer dst, int faces, int count) {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+	
+	@Override
+	public int totalBits() {
+		return _ints * 32;
 	}
 }
