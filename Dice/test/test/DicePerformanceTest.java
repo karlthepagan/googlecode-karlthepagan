@@ -2,7 +2,6 @@ package test;
 
 import java.util.Random;
 
-import ktp.rpg.Dice;
 import ktp.rpg.IDice;
 
 public abstract class DicePerformanceTest {

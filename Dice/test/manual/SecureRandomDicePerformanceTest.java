@@ -1,6 +1,5 @@
 package manual;
 
-import java.security.SecureRandom;
 import java.util.Random;
 
 import ktp.rpg.Dice;
