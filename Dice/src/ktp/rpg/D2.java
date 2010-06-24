@@ -52,4 +52,9 @@ final class D2 extends Die {
 	public int r(int rand, int bits) {
 		return rand & 0x01;
 	}
+
+	@Override
+	int multiOffset() {
+		return 1;
+	}
 }

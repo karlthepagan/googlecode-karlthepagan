@@ -1,15 +1,23 @@
 package ktp.rpg;
 
-final class MultiAccumulator implements Accumulator {
+import java.nio.IntBuffer;
+
+final class HistogramAccumulator implements Accumulator {
 	private int originalCount;
 	private int count;
 	private int sum;
-	private byte[] resultSet;
+	private int histOffset;
+	private IntBuffer resultHist;
 	
-	public void init(int count) {
+	public void init(int count, int multiOffset, IntBuffer dst) {
 		this.count = this.originalCount = count;
 		this.sum = 0;
-		this.resultSet = new byte[count];
+		resultHist = dst;
+		histOffset = dst.position() - 1 + multiOffset; // 0-(N-1)
+	}
+	
+	public void dispose() {
+		this.resultHist = null;
 	}
 
 	@Override
@@ -31,14 +39,13 @@ final class MultiAccumulator implements Accumulator {
 	public void result(int value) {
 		count--;
 		sum += value;
-		resultSet[count] = (byte)value;
+		
+		// TODO best optimization?
+		resultHist.put(histOffset + value,
+				resultHist.get(histOffset + value) + 1);
 	}
 	
 	public int sum() {
 		return sum;
-	}
-	
-	public byte[] resultSet() {
-		return resultSet;
 	}
 }

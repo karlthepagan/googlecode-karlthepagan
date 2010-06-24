@@ -10,4 +10,5 @@ abstract class Die {
 	abstract boolean regen(int bits);
 	abstract int bits(int i);
 	abstract int massStart(int minCount);
+	abstract int multiOffset();
 }

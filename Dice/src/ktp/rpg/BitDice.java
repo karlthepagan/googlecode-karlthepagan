@@ -52,25 +52,39 @@ class BitDice implements IDice {
 		SumAccumulator a = new SumAccumulator();
 		a.init(count);
 		D[faces - 2].mass(a, this);
-		return a.sum;
+		return a.sum();
 	}
 
 	@Override
 	public long hist(IntBuffer dst, int faces, int count, int min, int max) {
-		// TODO Auto-generated method stub
-		return 0;
+		int multiOffset = multiOffset(faces);
+		if(min <= 1 && max >= faces) {
+			HistogramAccumulator a = new HistogramAccumulator();
+			a.init(count, multiOffset, dst);
+			D[faces - 2].mass(a, this);
+			return a.sum();
+		} else {
+			BoundedHistogramAccumulator a = new BoundedHistogramAccumulator();
+			a.init(count, multiOffset, dst, min, max);
+			D[faces - 2].mass(a, this);
+			return a.sum();
+		}
 	}
 
 	@Override
 	public byte[] multi(int faces, int count) {
-		// TODO Auto-generated method stub
-		return null;
+		MultiAccumulator a = new MultiAccumulator();
+		a.init(count);
+		D[faces - 2].mass(a, this);
+		return a.resultSet();
 	}
 
 	@Override
 	public long multi(ByteBuffer dst, int faces, int count) {
-		// TODO Auto-generated method stub
-		return 0;
+		MultiBufferAccumulator a = new MultiBufferAccumulator();
+		a.init(count,dst);
+		D[faces - 2].mass(a, this);
+		return a.sum();
 	}
 	
 	@Override
@@ -81,5 +95,10 @@ class BitDice implements IDice {
 	public int nextInt() {
 		_ints++;
 		return _r.nextInt();
+	}
+
+	@Override
+	public int multiOffset(int faces) {
+		return D[faces-2].multiOffset();
 	}
 }

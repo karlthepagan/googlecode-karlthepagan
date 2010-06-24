@@ -95,4 +95,9 @@ final class D12 extends Die {
 	public boolean regen(int bits) {
 		return bits < 4;
 	}
+
+	@Override
+	int multiOffset() {
+		return 1;
+	}
 }

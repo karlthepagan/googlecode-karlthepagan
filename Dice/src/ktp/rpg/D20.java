@@ -109,4 +109,9 @@ final class D20 extends Die {
 	public boolean regen(int bits) {
 		return bits < 5;
 	}
+
+	@Override
+	int multiOffset() {
+		return 1;
+	}
 }
