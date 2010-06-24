@@ -80,7 +80,7 @@ public class SecureRandomDice2DTest {
 	
 	public void testRandom2(int faces, long limit, double ... pdist) {
 		Random r = new Random(2222);
-		SecureRandomDice d = new SecureRandomDice(r);
+		BitDice d = new BitDice(r);
 		int count = 0;
 		int[] dist = new int[faces * 2];
 		long i = Integer.MIN_VALUE;

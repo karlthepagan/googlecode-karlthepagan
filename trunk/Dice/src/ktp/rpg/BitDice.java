@@ -9,7 +9,7 @@ import java.util.Random;
 /**
  * Dice which make very efficient use of 
  */
-class SecureRandomDice implements IDice {
+class BitDice implements IDice {
 	
 	private final Random _r;
 	private int _ints = 0;
@@ -35,15 +35,11 @@ class SecureRandomDice implements IDice {
 		new D20()
 	};
 	
-	public SecureRandomDice() {
-		this(4);
-	}
-	
-	public SecureRandomDice(int numSeedBytes) {
+	public BitDice(int numSeedBytes) {
 		this(new SecureRandom(SecureRandom.getSeed(numSeedBytes)));
 	}
 	
-	public SecureRandomDice(Random rand) {
+	public BitDice(Random rand) {
 		_r = rand;
 	}
 	

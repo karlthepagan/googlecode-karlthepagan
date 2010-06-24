@@ -4,6 +4,9 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.Random;
 
+/**
+ * Naive Random.nextFloat() based implementation.
+ */
 public class FloatDice implements IDice {
 	
 	private final Random _r;
@@ -16,7 +19,7 @@ public class FloatDice implements IDice {
 	@Override
 	public int d(int faces) {
 		_floats++;
-		return 1 + (int)(_r.nextFloat() / faces);
+		return 1 + (int)(_r.nextFloat() * faces); // Math.floor
 	}
 
 	@Override
