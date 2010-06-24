@@ -87,4 +87,9 @@ final class D6 extends Die {
 	public boolean regen(int bits) {
 		return bits < 3;
 	}
+
+	@Override
+	int multiOffset() {
+		return 1;
+	}
 }

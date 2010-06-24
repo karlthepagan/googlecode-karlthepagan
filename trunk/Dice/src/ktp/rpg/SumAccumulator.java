@@ -2,8 +2,8 @@ package ktp.rpg;
 
 final class SumAccumulator implements Accumulator {
 	private int originalCount;
-	public int count;
-	public int sum;
+	private int count;
+	private int sum;
 	
 	public void init(int count) {
 		this.count = this.originalCount = count;
@@ -30,5 +30,9 @@ final class SumAccumulator implements Accumulator {
 	@Override
 	public int minCount() {
 		return originalCount;
+	}
+	
+	public int sum() {
+		return sum;
 	}
 }

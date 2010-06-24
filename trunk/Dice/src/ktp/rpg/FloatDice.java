@@ -53,4 +53,9 @@ public class FloatDice implements IDice {
 	public int totalBits() {
 		return _floats * 24;
 	}
+
+	@Override
+	public int multiOffset(int faces) {
+		return 1;
+	}
 }

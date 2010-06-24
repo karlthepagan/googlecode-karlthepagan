@@ -53,4 +53,9 @@ public class IntDice implements IDice {
 	public int totalBits() {
 		return _ints * 32;
 	}
+
+	@Override
+	public int multiOffset(int faces) {
+		return 1;
+	}
 }

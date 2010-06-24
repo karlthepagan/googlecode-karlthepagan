@@ -1,15 +1,21 @@
 package ktp.rpg;
 
-final class MultiAccumulator implements Accumulator {
+import java.nio.ByteBuffer;
+
+final class MultiBufferAccumulator implements Accumulator {
 	private int originalCount;
 	private int count;
 	private int sum;
-	private byte[] resultSet;
+	private ByteBuffer resultSet;
 	
-	public void init(int count) {
+	public void init(int count, ByteBuffer dst) {
 		this.count = this.originalCount = count;
 		this.sum = 0;
-		this.resultSet = new byte[count];
+		this.resultSet = dst;
+	}
+	
+	public void dispose() {
+		this.resultSet = null;
 	}
 
 	@Override
@@ -31,14 +37,10 @@ final class MultiAccumulator implements Accumulator {
 	public void result(int value) {
 		count--;
 		sum += value;
-		resultSet[count] = (byte)value;
+		resultSet.put((byte)value);
 	}
 	
 	public int sum() {
 		return sum;
-	}
-	
-	public byte[] resultSet() {
-		return resultSet;
 	}
 }

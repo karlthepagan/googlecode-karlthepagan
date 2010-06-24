@@ -28,6 +28,12 @@ public interface IDice {
 	byte[] multi(int faces, int count);
 	
 	/**
+	 * Offset applied to multi or hist roll results in order
+	 * to get the exact face number.
+	 */
+	int multiOffset(int faces);
+	
+	/**
 	 * Roll multiple dice and return all values in a buffer
 	 * @param dst destination for the result values
 	 * @param faces 2,3,4,5,6,8,10,12,20
@@ -42,8 +48,8 @@ public interface IDice {
 	 * @param dst destination for the result histogram
 	 * @param faces 2,3,4,5,6,8,10,12,20
 	 * @param count number of rolls
-	 * @param min minimum value to be included in sum
-	 * @param max maximum value to be included in sum
+	 * @param min minimum value to be included in sum and hist
+	 * @param max maximum value to be included in sum and hist
 	 * @return sum of the roll values
 	 */
 	long hist(IntBuffer dst, int faces, int count, int min, int max);
