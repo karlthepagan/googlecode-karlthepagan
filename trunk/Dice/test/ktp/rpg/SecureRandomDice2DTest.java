@@ -33,22 +33,22 @@ public class SecureRandomDice2DTest {
 		return pdist;
 	}
 	
-	@Test(timeout=500)
+	@Test//(timeout=500)
 	public void testRandom2D2() {
 		testRandom2(2,COUNT,pdist(2));
 	}
 
-	@Test(timeout=500)
+	@Test//(timeout=500)
 	public void testRandom2D3() {
 		testRandom2(3,COUNT,pdist(3));
 	}
 
-	@Test(timeout=500)
+	@Test//(timeout=500)
 	public void testRandom2D4() {
 		testRandom2(4,COUNT,pdist(4));
 	}
 
-	@Test(timeout=500)
+	@Test//(timeout=500)
 	public void testRandom2D5() {
 		testRandom2(5,COUNT,pdist(5));
 	}
@@ -63,7 +63,7 @@ public class SecureRandomDice2DTest {
 		testRandom2(8,COUNT,pdist(8));
 	}
 
-	@Test(timeout=500)
+	@Test//(timeout=500)
 	public void testRandom2D10() {
 		testRandom2(10,COUNT,pdist(10));
 	}
