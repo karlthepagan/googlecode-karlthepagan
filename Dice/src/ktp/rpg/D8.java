@@ -4,11 +4,11 @@ package ktp.rpg;
  * d8 - clean 3 bit + 1
  */
 final class D8 extends Die {
-	public int roll(SecureRandomDice r) {
+	public int roll(BitDice r) {
 		return 1 + (r.nextInt() & 0x07);
 	}
 	
-	public void mass(Accumulator a, SecureRandomDice r) {
+	public void mass(Accumulator a, BitDice r) {
 		
 		a.add(a.minCount());
 		

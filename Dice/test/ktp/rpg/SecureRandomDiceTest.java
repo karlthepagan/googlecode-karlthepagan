@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import java.nio.IntBuffer;
 import java.util.Random;
 
-import ktp.rpg.SecureRandomDice;
+import ktp.rpg.BitDice;
 
 import org.hamcrest.Matcher;
 import org.junit.Test;
@@ -180,7 +180,7 @@ public class SecureRandomDiceTest {
 	
 	protected void testRandom(int faces, long inc, long floor, double variance) {
 		Random r = new Random(2222);
-		SecureRandomDice d = new SecureRandomDice(r);
+		BitDice d = new BitDice(r);
 		int count = 0;
 		int[] dist = new int[faces];
 		long i = Integer.MIN_VALUE;

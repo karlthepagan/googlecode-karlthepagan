@@ -55,7 +55,7 @@ final class D10 extends Die {
 		return 1 + (v & 0x0F);
 	}
 
-	public int roll(SecureRandomDice r) {
+	public int roll(BitDice r) {
 		int v;
 		do {
 			v = r(r.nextInt(), 32);
@@ -63,7 +63,7 @@ final class D10 extends Die {
 		return value(v);
 	}
 	
-	public void mass(Accumulator a, SecureRandomDice r) {
+	public void mass(Accumulator a, BitDice r) {
 		a.add(a.minCount());
 		
 		int rand = r.nextInt();

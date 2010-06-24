@@ -4,6 +4,9 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.Random;
 
+/**
+ * Naive Random.nextInt(faces) implementation.
+ */
 public class IntDice implements IDice {
 	
 	private final Random _r;

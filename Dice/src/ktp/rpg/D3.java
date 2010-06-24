@@ -39,7 +39,7 @@ final class D3 extends Die {
 		return v & 0x03;
 	}
 
-	public int roll(SecureRandomDice r) {
+	public int roll(BitDice r) {
 		int rand = 0;
 		int rv;
 		
@@ -62,7 +62,7 @@ final class D3 extends Die {
 		return rv;
 	}
 	
-	public void mass(Accumulator a, SecureRandomDice r) {
+	public void mass(Accumulator a, BitDice r) {
 		int rand = r.nextInt();
 		int bits = 32;
 		
