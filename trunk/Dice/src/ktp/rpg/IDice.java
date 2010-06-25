@@ -54,6 +54,19 @@ public interface IDice {
 	 */
 	long hist(IntBuffer dst, int faces, int count, int min, int max);
 	
+	/**
+	 * 
+	 * @param a
+	 * @param faces
+	 */
+	void roll(Accumulator a, int faces);
+	
+	/**
+	 * 
+	 * @param a
+	 */
+	public void roll(Accumulator a);
+	
 //	void m(ShortBuffer dst, ShortBuffer spec);
 //	short[] m(short[] faces);
 //	short[] m(short[] faces, short[] count);

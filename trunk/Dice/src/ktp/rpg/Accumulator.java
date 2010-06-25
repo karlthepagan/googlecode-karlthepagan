@@ -4,9 +4,9 @@ package ktp.rpg;
  * Accumulator interface for mass rolling schemes.
  */
 // TODO so far interface accumulator tests faster than abstract on N280.
-interface Accumulator {
-	/** @return true if conditions for success or failure have been met */
-	boolean isDone();
+public interface Accumulator {
+	/** @return the face count of the next roll, zero if no roll needed */
+	int nextDie();
 	/** Append a result to this accumulated set. */
 	void result(int value);
 	/**

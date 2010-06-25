@@ -58,4 +58,16 @@ public class IntDice implements IDice {
 	public int multiOffset(int faces) {
 		return 1;
 	}
+
+	@Override
+	public void roll(Accumulator a, int faces) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void roll(Accumulator a) {
+		// TODO Auto-generated method stub
+		
+	}
 }

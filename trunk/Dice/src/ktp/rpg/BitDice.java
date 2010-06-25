@@ -50,8 +50,8 @@ class BitDice implements IDice {
 	@Override
 	public long d(int faces, int count) {
 		SumAccumulator a = new SumAccumulator();
-		a.init(count);
-		D[faces - 2].mass(a, this);
+		a.init(count,faces);
+		D[faces - 2].mass(a, this, 0);
 		return a.sum();
 	}
 
@@ -60,13 +60,13 @@ class BitDice implements IDice {
 		int multiOffset = multiOffset(faces);
 		if(min <= 1 && max >= faces) {
 			HistogramAccumulator a = new HistogramAccumulator();
-			a.init(count, multiOffset, dst);
-			D[faces - 2].mass(a, this);
+			a.init(count, faces, multiOffset, dst);
+			D[faces - 2].mass(a, this, 0);
 			return a.sum();
 		} else {
 			BoundedHistogramAccumulator a = new BoundedHistogramAccumulator();
-			a.init(count, multiOffset, dst, min, max);
-			D[faces - 2].mass(a, this);
+			a.init(count, faces, multiOffset, dst, min, max);
+			D[faces - 2].mass(a, this, 0);
 			return a.sum();
 		}
 	}
@@ -74,16 +74,16 @@ class BitDice implements IDice {
 	@Override
 	public byte[] multi(int faces, int count) {
 		MultiAccumulator a = new MultiAccumulator();
-		a.init(count);
-		D[faces - 2].mass(a, this);
+		a.init(count, faces);
+		D[faces - 2].mass(a, this, 0);
 		return a.resultSet();
 	}
 
 	@Override
 	public long multi(ByteBuffer dst, int faces, int count) {
 		MultiBufferAccumulator a = new MultiBufferAccumulator();
-		a.init(count,dst);
-		D[faces - 2].mass(a, this);
+		a.init(count,faces,dst);
+		D[faces - 2].mass(a, this, 0);
 		return a.sum();
 	}
 	
@@ -100,5 +100,20 @@ class BitDice implements IDice {
 	@Override
 	public int multiOffset(int faces) {
 		return D[faces-2].multiOffset();
+	}
+
+	@Override
+	public void roll(Accumulator a, int faces) {
+		D[faces - 2].mass(a, this, 0);
+	}
+	
+	@Override
+	public void roll(Accumulator a) {
+		int faces;
+		int rem = 0;
+		do {
+			faces = a.nextDie();
+			rem = D[faces - 2].mass(a, this, rem);
+		} while(faces != 0);
 	}
 }

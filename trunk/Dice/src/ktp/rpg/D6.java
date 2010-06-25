@@ -50,14 +50,21 @@ final class D6 extends Die {
 		return value(v);
 	}
 	
-	public void mass(Accumulator a, BitDice r) {
+	public int mass(Accumulator a, BitDice r, int remainder) {
 		a.add(a.minCount());
 		
-		int rand = r.nextInt();
-		int bits = 32;
+		int rand;
+		int bits;
+		if(remainder == 0) {
+			rand = r.nextInt();
+			bits = 32;
+		} else {
+			rand = remainder & 0x07FFFFFF;
+			bits = remainder >>> 27;
+		}
 		int v;
 		
-		while(!a.isDone()) {
+		do {
 			if(bits < 3) {
 				rand = r.nextInt();
 				bits = 32;
@@ -77,7 +84,13 @@ final class D6 extends Die {
 			bits -= 3;
 			
 			a.result(v & 0x07);
-		}
+		} while(a.nextDie() == 6);
+		
+		// 27 or more bits remain
+		if(bits >= 27)
+			return 0xD8000000 | (0x05FFFFFF & rand);
+		
+		return bits << 27 | (0x05FFFFFF & rand);
 	}
 
 	public int bits(int i) {
