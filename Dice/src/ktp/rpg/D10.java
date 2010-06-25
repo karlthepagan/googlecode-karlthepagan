@@ -63,14 +63,21 @@ final class D10 extends Die {
 		return value(v);
 	}
 	
-	public void mass(Accumulator a, BitDice r) {
+	public int mass(Accumulator a, BitDice r, int remainder) {
 		a.add(a.minCount());
 		
-		int rand = r.nextInt();
-		int bits = 32;
+		int rand;
+		int bits;
+		if(remainder == 0) {
+			rand = r.nextInt();
+			bits = 32;
+		} else {
+			rand = remainder & 0x07FFFFFF;
+			bits = remainder >>> 27;
+		}
 		int v;
 		
-		while(!a.isDone()) {
+		do {
 			if(bits < 4) {
 				rand = r.nextInt();
 				bits = 32;
@@ -97,7 +104,13 @@ final class D10 extends Die {
 			bits -= 4;
 			
 			a.result(v);
-		}
+		} while(a.nextDie() == 10);
+		
+		// 27 or more bits remain
+		if(bits >= 27)
+			return 0xFA000000 | rand;
+		
+		return bits << 27 | (0x05FFFFFF & rand);
 	}
 
 	public int bits(int i) {

@@ -7,11 +7,13 @@ final class HistogramAccumulator implements Accumulator {
 	private int count;
 	private int sum;
 	private int histOffset;
+	private int faces;
 	private IntBuffer resultHist;
 	
-	public void init(int count, int multiOffset, IntBuffer dst) {
+	public void init(int count, int faces, int multiOffset, IntBuffer dst) {
 		this.count = this.originalCount = count;
 		this.sum = 0;
+		this.faces = faces;
 		resultHist = dst;
 		histOffset = dst.position() - 1 + multiOffset; // 0-(N-1)
 	}
@@ -26,10 +28,10 @@ final class HistogramAccumulator implements Accumulator {
 	}
 
 	@Override
-	public boolean isDone() {
-		return count <= 0;
+	public int nextDie() {
+		return count > 0 ? faces : 0;
 	}
-
+	
 	@Override
 	public int minCount() {
 		return originalCount;

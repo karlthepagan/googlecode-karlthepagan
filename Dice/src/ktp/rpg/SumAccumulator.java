@@ -4,15 +4,17 @@ final class SumAccumulator implements Accumulator {
 	private int originalCount;
 	private int count;
 	private int sum;
+	private int faces;
 	
-	public void init(int count) {
+	public void init(int count, int faces) {
 		this.count = this.originalCount = count;
 		this.sum = 0;
+		this.faces = faces;
 	}
 
 	@Override
-	public boolean isDone() {
-		return count <= 0;
+	public int nextDie() {
+		return count > 0 ? faces : 0;
 	}
 
 	@Override

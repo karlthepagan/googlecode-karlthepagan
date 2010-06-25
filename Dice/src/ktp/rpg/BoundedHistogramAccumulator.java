@@ -6,13 +6,15 @@ final class BoundedHistogramAccumulator implements Accumulator {
 	private int count;
 	private int sum;
 	private int histOffset;
+	private int faces;
 	private IntBuffer resultHist;
 	private byte min;
 	private byte max;
 	
-	public void init(int count, int multiOffset, IntBuffer dst, int min, int max) {
+	public void init(int count, int faces, int multiOffset, IntBuffer dst, int min, int max) {
 		this.count = count;
 		this.sum = 0;
+		this.faces = faces;
 		resultHist = dst;
 		histOffset = dst.position() - 1 + multiOffset; // 0-(N-1)
 		this.min = (byte)(min - multiOffset);
@@ -29,10 +31,10 @@ final class BoundedHistogramAccumulator implements Accumulator {
 	}
 
 	@Override
-	public boolean isDone() {
-		return count <= 0;
+	public int nextDie() {
+		return count > 0 ? faces : 0;
 	}
-
+	
 	@Override
 	public int minCount() {
 		return 0;

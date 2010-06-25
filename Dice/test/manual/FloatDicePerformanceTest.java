@@ -1,5 +1,6 @@
 package manual;
 
+import java.security.SecureRandom;
 import java.util.Random;
 
 import ktp.rpg.FloatDice;
@@ -12,7 +13,7 @@ import test.DicePerformanceTest;
 
 public class FloatDicePerformanceTest extends DicePerformanceTest {
 	public static final int COUNT = 100000;
-	public static final int LOOPS = 100;
+	public static final int LOOPS = 200;
 	
 	@Test
 	public void testRandomD2() {
@@ -66,7 +67,7 @@ public class FloatDicePerformanceTest extends DicePerformanceTest {
 
 	@Override
 	protected Random getRandom(long seed) {
-		return new Random(seed);
-//		return new SecureRandom();
+//		return new Random(seed);
+		return new SecureRandom();
 	}
 }
